@@ -1,5 +1,7 @@
 #![allow(dead_code, unused)]
 
+use crate::cart::CartContext;
+
 #[derive(Debug, Default)]
 struct EmuContext {
     paused : bool,
@@ -14,5 +16,10 @@ impl EmuContext {
 }
 
 pub fn run() -> Result<(), ()> {
-    todo!();
+    
+    let mut ctx = CartContext::new();
+
+    ctx.load("src/utils/poke.gb");
+
+    Ok(())
 }

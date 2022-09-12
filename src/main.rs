@@ -1,8 +1,13 @@
+#![allow(unused_imports)]
+
 extern crate utils;
 
-use utils::emu::run;
+//use std::env;
+use utils::emu;
 
 #[allow(unused_must_use)]
 fn main() {
-    run();
+
+    //env::set_var("RUST_BACKTRACE", "full");
+    emu::run();
 }
