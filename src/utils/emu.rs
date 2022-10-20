@@ -1,12 +1,17 @@
 #![allow(dead_code, unused)]
 
-use crate::cart::CartContext;
+use std::env;
+
+use super::{
+    cartridge::CartContext,
+    cpu::Cpu,
+};
 
 #[derive(Debug, Default)]
-struct EmuContext {
-    paused : bool,
+pub struct EmuContext {
+    paused  : bool,
     running : bool,
-    ticks : u64
+    ticks   : u64,
 }
 
 impl EmuContext {
@@ -16,10 +21,13 @@ impl EmuContext {
 }
 
 pub fn run() -> Result<(), ()> {
-    
+
+    let file_path : String = env::args().nth(1)
+                                .expect("Expected path to the ROM file");
+
     let mut ctx = CartContext::new();
 
-    ctx.load("src/utils/poke.gb");
+    ctx.load(&file_path).expect(&format!("Failed to load ROM file: {}", file_path));
 
     Ok(())
 }

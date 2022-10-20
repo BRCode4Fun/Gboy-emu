@@ -1,5 +1,4 @@
-
-pub mod timer;
-pub mod cart;
-pub mod emu;
+pub mod cartridge;
+pub mod memory;
 pub mod cpu;
+pub mod emu;
