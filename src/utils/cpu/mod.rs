@@ -10,7 +10,7 @@ use super::{
         instr::{InstructionType},
     },
     cartridge::CartContext,
-    memory::Mmu,
+    memory::*,
 };
 
 pub struct Cpu {
@@ -37,23 +37,25 @@ impl Cpu {
     fn fetch_word(&self, address : u16) -> u16 { self.mmu.fetch_word(address) }
 
     pub fn run(&mut self) -> Result<(), ()> {
-        
+
         loop {
             if self.halted {
                 break;
             }
             // fetch
-            let opcode = self.fetch_byte(self.get_pc()); 
+            let opcode = 0x10; //self.fetch_byte(self.get_pc());
             self.inc_pc();
+
+
 
             // decode
             let (instruction, _cycles) = if let Some((instr, cycles)) = match opcode {
-                    
+
                     0xcb => InstructionType::from_byte_prefixed(opcode),
-                    
+
                     _ => InstructionType::from_byte(opcode),
 
-            } { (instr, cycles) } else { panic!("Opcode {:#02X} is not valid", opcode) };
+            } {(instr, cycles) } else { panic!("Opcode {:#02X} is not valid", opcode) };
 
             // execute
             /*match instruction {

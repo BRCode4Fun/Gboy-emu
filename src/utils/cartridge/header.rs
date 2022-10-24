@@ -6,7 +6,7 @@ pub struct RomHeader {
     pub entry : Vec<u8>,
     pub logo  : Vec<u8>,
     pub title : String,
-    
+
     pub new_lic_code : String,
     pub sgb_flag : u8,
     pub cart_type : u8,
@@ -29,7 +29,7 @@ impl RomHeader {
         self.logo = (&header[0x04..=0x33]).to_vec();
 
         self.title = String::from_utf8_lossy(&header[0x034..0x43]).into_owned();
-        
+
         self.new_lic_code = String::from_utf8_lossy(&header[0x044..=0x45]).into_owned();
 
         self.sgb_flag = header[0x46];

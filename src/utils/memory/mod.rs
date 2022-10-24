@@ -2,7 +2,7 @@ pub mod timer;
 
 use super::cartridge::CartContext;
 
-trait Memory {
+pub trait Memory {
     fn fetch_byte(&self, addr : u16) -> u8;
 
     fn set_byte(&mut self, addr : u16, value : u8);
@@ -10,7 +10,7 @@ trait Memory {
     fn fetch_word(&self, addr : u16) -> u16 {
         u16::from(self.fetch_byte(addr)) | (u16::from(self.fetch_byte(addr + 1)) << 8)
     }
-    fn set_word(&mut self, addr : u16, value : u16) {
+     fn set_word(&mut self, addr : u16, value : u16) {
         self.set_byte(addr, (value & 0xFF) as u8);
         self.set_byte(addr + 1, (value >> 8) as u8)
     }
@@ -37,7 +37,7 @@ pub struct Mmu {
     // pub gpu : Gpu,
     // pub joypad : Joypad,
     cartridge : CartContext,
-    hram      : [u8; HRAM_SIZE], 
+    hram      : [u8; HRAM_SIZE],
     wram      : [u8; WRAM_SIZE],
     wram_bank : usize,
 }
@@ -54,10 +54,26 @@ impl Mmu {
 }
 
 impl Memory for Mmu {
-    fn fetch_byte(&self, addr : u16) -> u8 {
-        todo!()
+     fn fetch_byte(&self, addr : u16) -> u8 {
+        match addr {
+
+          0x0000..= 0x7fff  => return self.cartridge.rom_data[addr as usize],
+          0xc000..= 0xdfff  => return self.wram[(addr & 0x1fff) as usize],
+          0xFF80..= 0xFFFE  => return self.hram[(addr - 0xFF80) as usize],
+          _ => panic!("Error Invalid Address")
+
+      };
     }
-    fn set_byte(&mut self, addr : u16, value : u8) {
-        todo!()
+
+     fn set_byte(&mut self, addr : u16, value : u8) {
+
+        match addr {
+
+          0x0000..= 0x7fff  => self.cartridge.rom_data[addr as  usize] = value,
+          0xC000..= 0xDFFF  => self.wram[(addr & 0x1FFF) as usize]     = value,
+          0xFF80..= 0xFFFE  => self.hram[(addr - 0xFF80) as usize]     = value,
+          _ => panic!("Error  Invalid Address")
+
+      };
     }
 }
