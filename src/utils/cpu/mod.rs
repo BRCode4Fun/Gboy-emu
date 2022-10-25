@@ -7,10 +7,13 @@ use super::{
             Registers,
             CpuFlag::{Z, N, H, C},
         },
-        instr::{InstructionType},
+        instr::{
+            InstructionType::{*}, // defines each cpu instruction
+            {*} // defines the required operands
+        },
     },
     cartridge::CartContext,
-    memory::*,
+    memory::{*},
 };
 
 pub struct Cpu {
@@ -36,6 +39,8 @@ impl Cpu {
     fn fetch_byte(&self, address : u16) -> u8  { self.mmu.fetch_byte(address) }
     fn fetch_word(&self, address : u16) -> u16 { self.mmu.fetch_word(address) }
 
+    pub fn set_byte(&mut self, addr : u16, val : u8) { self.mmu.set_byte(addr, val); }
+
     pub fn run(&mut self) -> Result<(), ()> {
 
         loop {
@@ -43,35 +48,60 @@ impl Cpu {
                 break;
             }
             // fetch
-            let opcode = 0x10; //self.fetch_byte(self.get_pc());
+            let opcode = self.fetch_byte(self.get_pc());
             self.inc_pc();
-
-
 
             // decode
             let (instruction, _cycles) = if let Some((instr, cycles)) = match opcode {
 
                     0xcb => InstructionType::from_byte_prefixed(opcode),
-
                     _ => InstructionType::from_byte(opcode),
 
             } {(instr, cycles) } else { panic!("Opcode {:#02X} is not valid", opcode) };
 
             // execute
-            /*match instruction {
+            match instruction {
 
-                Load(Source, Destination) => {
-                    let s = match Source {
-                        Reg::A => cpu.a,
-                        Reg::B => cpu.b,
-                    }
-                    let d = match Destination {
+                Load(dest, src) => {
+                    
+                    let value : u8 = match src {
+                        Source::ByteConst => {
+                            let c = self.fetch_byte(self.get_pc());
+                            self.inc_pc();
+                            c
+                        },
+                        Source::ByteReg(reg8) => match reg8 {
+                            Reg8::A => self.regs.a,
+                            Reg8::B => self.regs.b,
+                            Reg8::C => self.regs.c,
+                            Reg8::D => self.regs.d,
+                            Reg8::E => self.regs.e,
+                            Reg8::H => self.regs.h,
+                            Reg8::L => self.regs.l,
+                        },
+                        _ => todo!(),
+                    };
 
-                    }
-                    *d = s;
-                }
-                Nop => {}
-            }*/
+                    let target : &mut u8 = match dest {
+                        
+                        Target::ByteReg(reg8) => match reg8 {
+                                Reg8::A => &mut self.regs.a,
+                                Reg8::B => &mut self.regs.b,
+                                Reg8::C => &mut self.regs.c,
+                                Reg8::D => &mut self.regs.d,
+                                Reg8::E => &mut self.regs.e,
+                                Reg8::H => &mut self.regs.h,
+                                Reg8::L => &mut self.regs.l,
+                        },
+                        _ => todo!(),
+                    };
+                    *target = value;
+                },
+                Halt => {
+                    self.halted = true;
+                },
+                _other => todo!(),
+            }
         }
 
         Ok(())

@@ -45,35 +45,33 @@ pub struct Mmu {
 impl Mmu {
     pub fn new(cartridge : &CartContext) -> Self {
         Mmu {
-            cartridge : CartContext::default(), // todo!(update to set from args)
-            hram      : [0; HRAM_SIZE],
-            wram      : [0; WRAM_SIZE],
+            cartridge : CartContext::new(), // todo!(update to set from args)
+            hram      : [0u8; HRAM_SIZE],
+            wram      : [0u8; WRAM_SIZE],
             wram_bank : 0,
         }
     }
 }
 
 impl Memory for Mmu {
-     fn fetch_byte(&self, addr : u16) -> u8 {
+
+    fn fetch_byte(&self, addr : u16) -> u8 {
+
         match addr {
-
-          0x0000..= 0x7fff  => return self.cartridge.rom_data[addr as usize],
-          0xc000..= 0xdfff  => return self.wram[(addr & 0x1fff) as usize],
-          0xFF80..= 0xFFFE  => return self.hram[(addr - 0xFF80) as usize],
-          _ => panic!("Error Invalid Address")
-
-      };
+          0x0000..=0x7FFF  => self.cartridge.read(addr),
+          0xC000..=0xDFFF  => self.wram[(addr & 0x1FFF) as usize],
+          0xFF80..=0xFFFE  => self.hram[(addr - 0xFF80) as usize],
+          _ => panic!("Invalid Address")
+        }
     }
 
-     fn set_byte(&mut self, addr : u16, value : u8) {
+    fn set_byte(&mut self, addr : u16, value : u8) {
 
         match addr {
-
-          0x0000..= 0x7fff  => self.cartridge.rom_data[addr as  usize] = value,
-          0xC000..= 0xDFFF  => self.wram[(addr & 0x1FFF) as usize]     = value,
-          0xFF80..= 0xFFFE  => self.hram[(addr - 0xFF80) as usize]     = value,
-          _ => panic!("Error  Invalid Address")
-
-      };
+            0x0000..=0x7FFF  => self.cartridge.write(addr, value),
+            0xC000..=0xDFFF  => self.wram[(addr & 0x1FFF) as usize] = value,
+            0xFF80..=0xFFFE  => self.hram[(addr - 0xFF80) as usize] = value,
+            _ => panic!("Invalid Address")
+        };
     }
 }

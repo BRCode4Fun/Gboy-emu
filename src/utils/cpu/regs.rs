@@ -48,6 +48,9 @@ impl Registers {
 
     pub fn get_flag(&self, flag : CpuFlag) -> bool { (self.f & (flag as u8)) > 0 }
 
+    #[cfg(test)]
+    fn all_flags(&self) -> u8 { self.f }
+
     // setters
     pub fn set_af(&mut self, value : u16) {
         self.a = (value >> 8)     as u8;
@@ -79,47 +82,17 @@ impl Registers {
 
 #[cfg(test)]
 mod test {
-    use super::Registers;
-    use super::CpuFlag::{Z, N, H, C};
-
-    #[test]
-    fn wide_registers() {
-        let mut regs = Registers::new();
-
-        regs.a = 0x12;
-        regs.set_flag(Z, false);
-        regs.set_flag(N, false);
-        regs.set_flag(C, false);
-        regs.set_flag(H, true);
-        assert_eq!(regs.af(), 0x1220);
-        regs.set_af(0x1111);
-        assert_eq!(regs.af(), 0x1110);
-
-        regs.b = 0x34;
-        regs.c = 0x45;
-        assert_eq!(regs.bc(), 0x3445);
-        regs.set_bc(0x1111);
-        assert_eq!(regs.bc(), 0x1111);
-
-        regs.d = 0x56;
-        regs.e = 0x67;
-        assert_eq!(regs.de(), 0x5667);
-        regs.set_de(0x1111);
-        assert_eq!(regs.de(), 0x1111);
-
-        regs.h = 0x78;
-        regs.l = 0x89;
-        assert_eq!(regs.hl(), 0x7889);
-        regs.set_hl(0x1111);
-        assert_eq!(regs.hl(), 0x1111);
-    }
+    use super::{
+        Registers,
+        CpuFlag::{Z, N, H, C},
+    };
 
     #[test]
     fn flags() {
         let mut regs = Registers::new();
 
         // check if only the most-significant nibble of the flag register is set
-        assert_eq!(regs.f & 0x0F, 0);
+        assert_eq!(regs.all_flags() & 0x0F, 0u8);
 
         regs.set_flag(Z, false);
         regs.set_flag(N, false);

@@ -30,7 +30,11 @@ pub struct CartContext {
 
 impl CartContext {
     pub fn new() -> Self {
-        CartContext::default()
+        CartContext {
+            header   : RomHeader::new(),
+            rom_data : vec![0u8; 0x8000],
+            rom_size : 0x8000,
+        }
     }
     pub fn load(&mut self, filename : &str) -> Result<(), ()> {
 
@@ -182,10 +186,10 @@ impl CartContext {
 
         Ok(())
     }
-    pub fn read(self, address : u16)  -> u8 {
+    pub fn read(&self, address : u16)  -> u8 {
         self.rom_data[address as usize]
-    } 
-    pub fn write(self, address : u16, value : u8) {
-        todo!();
+    }
+    pub fn write(&mut self, address : u16, value : u8) {
+        self.rom_data[address as usize] = value
     }
 }
