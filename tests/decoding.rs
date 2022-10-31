@@ -1,14 +1,15 @@
 #[cfg(test)]
 mod test {
-    use utils::cpu::instr::InstructionType;
-
-    fn fetch(opcode : u8) -> String {
+    use utils::cpu::{
+        instr::InstructionType
+    };
+    fn fetch(opcode : u8) -> InstructionType {
         let (instruction, _) = InstructionType::from_byte(opcode).unwrap();
-        format!("{:?}", instruction)
+        instruction
     }
     #[test]
     fn decode() {
-        assert_eq!(fetch(0x3E), "Load(ByteReg(A), ByteConst)");
-        assert_eq!(fetch(0x76), "Halt");
+        assert_eq!(format!("{:?}", fetch(0x3E)), "Load(ByteReg(A), ByteConst)");
+        assert_eq!(format!("{:?}", fetch(0x76)), "Halt");
     }
 }

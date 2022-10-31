@@ -1,11 +1,9 @@
 #[cfg(test)]
 mod test {
-    
     use utils::cpu::regs::{
         Registers,
         CpuFlag::{Z, N, H, C},
     };
-
     #[test]
     fn wide_registers() {
         let mut regs = Registers::new();

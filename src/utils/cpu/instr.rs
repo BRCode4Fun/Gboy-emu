@@ -20,9 +20,9 @@ pub enum Reg16 {
 #[derive(Debug, Copy, Clone)]
 pub enum Addr {
     WordReg(Reg16),
-    WordConst,        // 16-bit immediate constant
-    RegRel(Reg8),    // register offset from 0xFF00 
-    ByteRel,          // byte offset from 0xFF00
+    WordConst,      // 16-bit immediate constant
+    RegRel(Reg8),   // register offset from 0xFF00 
+    ByteRel,        // byte offset from 0xFF00
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -56,7 +56,7 @@ pub enum InstructionType {
     Xor(Source),         // logical exclusive OR source with A, result in A
     Cp(Source),          // compare A with source
 
-    Ccf,  // complement carry flag 
+    Ccf,  // complement carry flag
     Scf,  // set carry flag
 
     Rra,  // rotate A right through carry flag
